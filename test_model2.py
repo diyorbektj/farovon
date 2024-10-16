@@ -24,7 +24,9 @@ model = YOLO("best4.pt")
 
 # Determine the device to use
 device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-
+model.to(device)
+if device == "cuda":
+    model = model.half()
 # Initialize counters and other variables
 FLOUR_COUNT = 0
 FLAG = True
@@ -113,12 +115,11 @@ def generate_frames():
             output.write(frame)
 
         # Encode frame as JPEG
-        ret, buffer = cv2.imencode('.jpg', frame)
+        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
         if not ret:
             continue
         frame_bytes = buffer.tobytes()
 
-        # Yield frame in byte format
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
@@ -173,3 +174,4 @@ if __name__ == '__main__':
         app.run(host='0.0.0.0', port=5001, debug=False)
     finally:
         cv2.destroyAllWindows()
+
