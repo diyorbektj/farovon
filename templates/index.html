@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YOLO Video Stream</title>
+</head>
+<body>
+    <h1>YOLO Video Stream</h1>
+    <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+        <input type="file" placeholder="Upload File" name="video_file" accept="video/*">
+        <span>OR</span>
+        <input type="text" placeholder="Video url" name="video_url" accept="video/*">
+        <input type="submit" value="Upload Video">
+    </form>
+    <h2>Or use Webcam:</h2>
+    <img src="{{ url_for('video_feed') }}" width="100%">
+    {% if video_path %}
+        <h2>Uploaded Video Stream:</h2>
+        <img src="{{ url_for('video_feed', source='upload') }}" width="100%">
+    {% endif %}
+</body>
+</html>
