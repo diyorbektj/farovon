@@ -81,6 +81,13 @@ sudo ln -s /etc/nginx/sites-available/yolo_flask_app_2 /etc/nginx/sites-enabled
 
 sudo systemctl restart nginx
 
+SCREEN_SESSION_NAME="stream"
+screen -dmS "$SCREEN_SESSION_NAME" bash -c "cd $PROJECT_DIR && source venv/bin/activate && python3 test_model.py"
+
+SCREEN_SESSION_NAME="stream_2"
+screen -dmS "$SCREEN_SESSION_NAME" bash -c "cd $PROJECT_DIR && source venv/bin/activate && python3 test_model_2.py"
+
+
 
 echo "Installation is complete. The Flask app should now be running and accessible via Nginx."
 echo "If you've set up a domain, it should now be accessible at http://your_domain_or_ip."
