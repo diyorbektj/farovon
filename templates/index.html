@@ -11,8 +11,8 @@
         <input type="text" placeholder="Video url" name="video_url" accept="video/*">
         <input type="submit" value="Upload Video">
     </form>
-    <h2>Or use Webcam:</h2>
-    <img src="{{ url_for('video_feed') }}" width="100%">
+    <h2>Stream:</h2>
+    <img src="{{ url_for('video_feed') }}" width="720" height="480">
     {% if video_path %}
         <h2>Uploaded Video Stream:</h2>
         <img src="{{ url_for('video_feed', source='upload') }}" width="100%">

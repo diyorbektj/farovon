@@ -37,6 +37,31 @@ old_x1 = 0
 video_lock = threading.Lock()
 
 
+class VideoStream:
+    def __init__(self, source):
+        self.cap = cv2.VideoCapture(source)
+        self.ret = False
+        self.frame = None
+        self.stopped = False
+        self.lock = threading.Lock()
+
+    def start(self):
+        threading.Thread(target=self.update, args=()).start()
+        return self
+
+    def update(self):
+        while not self.stopped:
+            with self.lock:
+                self.ret, self.frame = self.cap.read()
+
+    def read(self):
+        with self.lock:
+            return self.ret, self.frame
+
+    def stop(self):
+        self.stopped = True
+        self.cap.release()
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -72,6 +97,7 @@ def generate_frames():
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     fps = fps if fps > 0 else 30  # Default to 30 if FPS not available
+    cap.set(cv2.CAP_PROP_HW_ACCELERATION, cv2.VIDEO_ACCELERATION_ANY)
 
     # Initialize VideoWriter only if processing an uploaded video
     if isinstance(source, str):
@@ -115,7 +141,9 @@ def generate_frames():
             output.write(frame)
 
         # Encode frame as JPEG
-        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 70])
+
+        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 50])  # Reduce quality to 50
+
         if not ret:
             continue
         frame_bytes = buffer.tobytes()
@@ -171,7 +199,7 @@ def video_feed():
 
 if __name__ == '__main__':
     try:
-        app.run(host='0.0.0.0', port=5001, debug=False)
+        app.run(host='0.0.0.0', port=5001, threaded=True, use_reloader=False)
     finally:
         cv2.destroyAllWindows()
 

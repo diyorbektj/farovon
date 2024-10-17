@@ -71,6 +71,7 @@ def generate_frames():
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
     fps = fps if fps > 0 else 30  # Default to 30 if FPS not available
+    cap.set(cv2.CAP_PROP_HW_ACCELERATION, cv2.VIDEO_ACCELERATION_ANY)
 
     # Initialize VideoWriter only if processing an uploaded video
     if isinstance(source, str):
@@ -132,7 +133,8 @@ def generate_frames():
         if output:
             output.write(frame)
 
-        ret, buffer = cv2.imencode('.jpg', frame)
+        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 50])  # Reduce quality to 50
+
         if not ret:
             continue
         frame_bytes = buffer.tobytes()
@@ -186,6 +188,7 @@ def video_feed():
 
 if __name__ == '__main__':
     try:
-        app.run(host='0.0.0.0', port=5000, debug=False)
+        app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
     finally:
         cv2.destroyAllWindows()
+
