@@ -11,11 +11,44 @@
         <input type="text" placeholder="Video url" name="video_url" accept="video/*">
         <input type="submit" value="Upload Video">
     </form>
-    <h2>Stream:</h2>
+    <h2>Stream <div id="timer">00:00:00.000</div>:</h2>
     <img src="{{ url_for('video_feed') }}" width="720" height="480">
     {% if video_path %}
         <h2>Uploaded Video Stream:</h2>
         <img src="{{ url_for('video_feed', source='upload') }}" width="100%">
     {% endif %}
+
+<style>
+        #timer {
+            font-size: 2rem;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+<script>
+    let startTime;
+    let timerInterval;
+
+    function startTimer() {
+        startTime = Date.now();
+
+        timerInterval = setInterval(() => {
+            const elapsedTime = Date.now() - startTime;
+            const hours = Math.floor(elapsedTime / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            const milliseconds = (elapsedTime % 1000).toString().padStart(3, '0');
+
+            document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+        }, 10);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
+
+    // Start the timer automatically when the page loads
+    window.onload = startTimer;
+</script>
+
 </body>
 </html>
